@@ -74,3 +74,7 @@ static Nullable<int> DoNullableThings()
     return val7;
 }
 ```
+
+#Notes
+
+In its current form, this is not compatible with asynchronous tasks.
