@@ -12,7 +12,19 @@ namespace NullableTaskLike
         {
             var nullable = DoNullableThings();
             Console.WriteLine(nullable.HasValue);
+
+            var list = DoListThings();
+            foreach(var item in list)
+                Console.WriteLine(item); // 1, 2, 3, 4
             Console.ReadLine();
+        }
+
+        static async ListTaskLike<int> DoListThings()
+        {
+            await ListTaskLike.Yield(1);
+            await ListTaskLike.Yield(2);
+            await ListTaskLike.Yield(3);
+            return 4;
         }
 
         static async NullableTaskLike<int> DoNullableThings()
