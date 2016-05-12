@@ -22,10 +22,16 @@ namespace NullableTaskLike
         static async ListTaskLike<int> DoListThings()
         {
             await ListTaskLike.Yield(1);
+            await DoNestedListThings();
+            return await ListTaskLike.Break<int>();
+        }
+
+        static async ListTaskLike<int> DoNestedListThings()
+        {
             await ListTaskLike.Yield(2);
             await ListTaskLike.Yield(3);
             return await ListTaskLike.Break<int>();
-        }
+        } 
 
         static async NullableTaskLike<int> DoNullableThings()
         {

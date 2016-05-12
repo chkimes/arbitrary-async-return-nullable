@@ -8,8 +8,8 @@ namespace NullableTaskLike
     [Tasklike(typeof(ListTaskMethodBuilder<>))]
     public class ListTaskLike<TResult> : List<TResult>
     {
-        public bool IsCompleted => true;
-        public bool IsCompletedSuccessfully => true;
+        public bool IsCompleted => false;
+        public bool IsCompletedSuccessfully => false;
         public bool IsFaulted => false;
         public bool IsCanceled => false;
 
@@ -25,7 +25,7 @@ namespace NullableTaskLike
 
     public struct ListTaskAwaiter<TResult> : ICriticalNotifyCompletion
     {
-        private readonly ListTaskLike<TResult> _list;
+        internal readonly ListTaskLike<TResult> _list;
         internal ListTaskAwaiter(ListTaskLike<TResult> list) { _list = list; }
 
         public bool IsCompleted => _list.IsCompleted;
@@ -89,6 +89,12 @@ namespace NullableTaskLike
             {
                 _list.Add(((Yielder<TResult>)(object)awaiter).Value);
                 stateMachine.MoveNext();
+            }
+
+            if (awaiter is ListTaskAwaiter<TResult>)
+            {
+                var list = ((ListTaskAwaiter<TResult>) (object) awaiter)._list;
+                _list.AddRange(list);
             }
 
             if (awaiter is Breaker<TResult>)
