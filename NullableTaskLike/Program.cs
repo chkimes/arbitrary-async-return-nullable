@@ -15,7 +15,7 @@ namespace NullableTaskLike
 
             var list = DoListThings();
             foreach(var item in list)
-                Console.WriteLine(item); // 1, 2, 3, 4
+                Console.WriteLine(item); // 1, 2, 3
             Console.ReadLine();
         }
 
@@ -24,7 +24,7 @@ namespace NullableTaskLike
             await ListTaskLike.Yield(1);
             await ListTaskLike.Yield(2);
             await ListTaskLike.Yield(3);
-            return 4;
+            return await ListTaskLike.Break<int>();
         }
 
         static async NullableTaskLike<int> DoNullableThings()

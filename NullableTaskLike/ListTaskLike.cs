@@ -20,6 +20,7 @@ namespace NullableTaskLike
     public static class ListTaskLike
     {
         public static Yielder<T> Yield<T>(T value) => new Yielder<T>(value);
+        public static Breaker<T> Break<T>() => new Breaker<T>();
     }
 
     public struct ListTaskAwaiter<TResult> : ICriticalNotifyCompletion
@@ -43,14 +44,32 @@ namespace NullableTaskLike
         public Yielder<TResult> GetAwaiter() => this;
         public void OnCompleted(Action continuation) => continuation();
         public void UnsafeOnCompleted(Action continuation) => continuation();
-        public void GetResult() { }
+        public TResult GetResult() => Value;
+    }
+
+    public class Breaker<T> : ICriticalNotifyCompletion
+    {
+        internal Breaker() {}
+
+        public bool IsCompleted => false;
+        public Breaker<T> GetAwaiter() => this;
+
+        public void OnCompleted(Action continuation) { }
+        public void UnsafeOnCompleted(Action continuation) { }
+        public T GetResult() => default(T);
     }
 
     class ListTaskMethodBuilder<TResult>
     {
-        internal ListTaskLike<TResult> _list = new ListTaskLike<TResult>(); 
+        internal ListTaskLike<TResult> _list = new ListTaskLike<TResult>();
+        internal bool _broken;
 
-        public void SetResult(TResult result) => _list.Add(result);
+        public void SetResult(TResult result)
+        {
+            if (!_broken)
+                _list.Add(result);
+        }
+
         public ListTaskLike<TResult> Task => _list;
         public static ListTaskMethodBuilder<TResult> Create() => new ListTaskMethodBuilder<TResult>();
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine => stateMachine.MoveNext();
@@ -70,6 +89,11 @@ namespace NullableTaskLike
             {
                 _list.Add(((Yielder<TResult>)(object)awaiter).Value);
                 stateMachine.MoveNext();
+            }
+
+            if (awaiter is Breaker<TResult>)
+            {
+                _broken = true;
             }
         }
     }
