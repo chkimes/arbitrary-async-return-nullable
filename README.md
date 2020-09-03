@@ -48,7 +48,7 @@ Returning none
 False
 ```
 
-#Wait, what?
+# Wait, what?
 
 Using the arbitrary async return C# language proposal (located here: https://github.com/ljw1004/roslyn/blob/features/async-return/docs/specs/feature%20-%20arbitrary%20async%20returns.md), we can return any task-like type we want from async methods. Using this, we can leverage the compiler to write code that acts like do-notation in Haskell. This implementation of `Nullable` is akin to Haskell's `Maybe` type.
 
