@@ -75,6 +75,6 @@ static Nullable<int> DoNullableThings()
 }
 ```
 
-#Notes
+# Notes
 
 In its current form, this is not compatible with asynchronous tasks.
